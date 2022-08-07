@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>MimicShhans的橡皮擦</title>
+        <style media="screen">
+            .box {
+              display: inline-block;
+              /* background: url("img/6976.png"); */
+              background-size: cover;
+              width:600px;
+              height:600px;
+            }
+            canvas {
+              background: transparent;
+              width:600px;
+              height:600px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id='box' class="box"  >
+            <canvas id="canvas"></canvas>
+        </div>
+        <br>
+        front（1-967）:<input id='front' value="2687" min='1' step='1' max='967'>
+        <br>
+        back（1-967）:<input id='back'  value="6976" min='1' step='1' max='967'>
+        <br>
+        <button onclick="apply();">apply</button>
+    </body>
+    <script type="text/javascript" >
+
+        function apply(){
+            var front = document.getElementById('front').value;
+            var back  = document.getElementById('back').value;
+
+            document.getElementById('box').style.background="url(img/"+back+".png)";
+            var url = "img/"+front+".png";
+            // var url = 'img/2687.png';
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+            var img = new Image();
+            img.src = url;
+            img.onload = function () {
+              // var width = Math.min(500, img.width);
+              var width = img.width;
+              var height = img.height * (width / img.width);
+              canvas.width = width;
+              canvas.height = height;
+              ctx.drawImage(img, 0, 0, width, height);
+            };
+            var isPress = false;
+            var old = null;
+            canvas.addEventListener('mousedown', function (e){
+              isPress = true;
+              old = {x: e.offsetX, y: e.offsetY};
+            });
+            canvas.addEventListener('mousemove', function (e){
+              if (isPress) {
+                var x = e.offsetX;
+                var y = e.offsetY;
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(x, y, 10, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.lineWidth = 20;
+                ctx.beginPath();
+                ctx.moveTo(old.x, old.y);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                old = {x: x, y: y};
+              }
+            });
+            canvas.addEventListener('mouseup', function (e){
+              isPress = false;
+            });
+
+        }
+        apply()
+
+    </script>
+</html>
